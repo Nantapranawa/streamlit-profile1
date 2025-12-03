@@ -5,6 +5,8 @@ import os
 import streamlit as st
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+import zipfile
+import io
 
 # Define Fonts
 pdfmetrics.registerFont(TTFont('Aptos', 'fonts/Aptos.ttf'))
@@ -77,9 +79,12 @@ if excel_file:
         for i, line in enumerate(final_lines):
             c.drawString(x, y - (i * line_height), line)
 
-    # Create a button to trigger PDF generation
-    if st.button('Generate PDFs'):
-        # Create PDFs
+    # Create a button to trigger PDF generation and zipping
+    if st.button('Generate and Download All PDFs'):
+        # List to hold all generated PDFs for zipping
+        pdf_files = []
+
+        # Generate PDFs
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=False):
             output_pdf = os.path.join(output_dir, f"output_{row[0].value}.pdf")
 
@@ -117,15 +122,24 @@ if excel_file:
 
             c.save()
 
-            # Allow users to download the generated PDF
-            with open(output_pdf, "rb") as file:
-                st.download_button(
-                    label=f"Download {row[0].value}'s Profile PDF",
-                    data=file,
-                    file_name=f"output_{row[0].value}.pdf",
-                    mime="application/pdf"
-                )
+            # Add the generated PDF to the list of files
+            pdf_files.append(output_pdf)
 
-        st.success("PDFs generated successfully!")
+        # Create a ZIP file containing all the PDFs
+        zip_filename = "generated_pdfs.zip"
+        with zipfile.ZipFile(zip_filename, 'w') as zipf:
+            for pdf_file in pdf_files:
+                zipf.write(pdf_file, os.path.basename(pdf_file))
+
+        # Provide the ZIP file for download
+        with open(zip_filename, "rb") as zip_file:
+            st.download_button(
+                label="Download All PDFs",
+                data=zip_file,
+                file_name=zip_filename,
+                mime="application/zip"
+            )
+
+        st.success("All PDFs generated and zipped successfully!")
 else:
     st.warning("Please upload an Excel file to get started.")
