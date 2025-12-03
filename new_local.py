@@ -117,15 +117,7 @@ if excel_file:
 
             c.save()
 
-            # Allow users to download the generated PDF
-            with open(output_pdf, "rb") as file:
-                st.download_button(
-                    label=f"Download {row[0].value}'s Profile PDF",
-                    data=file,
-                    file_name=f"output_{row[0].value}.pdf",
-                    mime="application/pdf"
-                )
-
         st.success("PDFs generated successfully!")
+        st.write("The generated PDFs are available in the 'results' directory.")
 else:
     st.warning("Please upload an Excel file to get started.")
