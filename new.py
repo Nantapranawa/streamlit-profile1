@@ -33,10 +33,12 @@ if excel_file:
     positions = {
         'name': {'position': (410, 1420), 'max_chars': 50, 'font_size': 40, 'line_height': 40, 'font_style': 'extra_bold'},
         'jabatan': {'position': (410, 1378), 'max_chars': 80, 'font_size': 40, 'line_height': 36, 'font_style': 'normal'},
+        'summary': {'position': (400, 1300), 'max_chars': 168, 'font_size': 28, 'line_height': 36, 'font_style': 'normal'},
         'education': {'position': (400, 1125), 'max_chars': 100, 'font_size': 28, 'line_height': 36, 'font_style': 'normal'},
-        'skills': {'position': (120, 950), 'max_chars': 45, 'font_size': 26, 'line_height': 36, 'font_style': 'normal'},
+        'skills': {'position': (120, 950), 'max_chars': 42, 'font_size': 26, 'line_height': 36, 'font_style': 'normal'},
         'performance': {'position': (720, 975), 'max_chars': 14, 'font_size': 28, 'line_height': 34, 'font_style': 'normal'},
         'experience': {'position': (940, 975), 'max_chars': 70, 'font_size': 25, 'line_height': 36, 'font_style': 'normal'},
+        'business_imp': {'position': (940, 400), 'max_chars': 70, 'font_size': 22, 'line_height': 36, 'font_style': 'normal'},
         'leadership': {'position': (1800, 940), 'max_chars': 30, 'font_size': 30, 'line_height': 38, 'font_style': 'normal'},
         'qualification': {'position': (1855, 232), 'max_chars': 30, 'font_size': 27, 'line_height': 38, 'font_style': 'bold'},
     }
@@ -79,9 +81,9 @@ if excel_file:
         for i, line in enumerate(final_lines):
             c.drawString(x, y - (i * line_height), line)
 
-    # Create a button to trigger PDF generation and zipping
-    if st.button('Generate and Download All PDFs'):
-        # List to hold all generated PDFs for zipping
+    # Generate button
+    if st.button('Generate PDFs'):
+        # List to hold all generated PDFs
         pdf_files = []
 
         # Generate PDFs
@@ -125,21 +127,6 @@ if excel_file:
             # Add the generated PDF to the list of files
             pdf_files.append(output_pdf)
 
-        # Create a ZIP file containing all the PDFs
-        zip_filename = "generated_pdfs.zip"
-        with zipfile.ZipFile(zip_filename, 'w') as zipf:
-            for pdf_file in pdf_files:
-                zipf.write(pdf_file, os.path.basename(pdf_file))
-
-        # Provide the ZIP file for download
-        with open(zip_filename, "rb") as zip_file:
-            st.download_button(
-                label="Download All PDFs",
-                data=zip_file,
-                file_name=zip_filename,
-                mime="application/zip"
-            )
-
-        st.success("All PDFs generated and zipped successfully!")
+        st.success(f"All PDFs generated successfully and saved in the '{output_dir}' folder!")
 else:
     st.warning("Please upload an Excel file to get started.")
